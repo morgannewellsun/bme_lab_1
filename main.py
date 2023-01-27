@@ -52,10 +52,14 @@ class Channel:
         self.beta_k = beta_k
 
     def alpha(self, membrane_potential):
-        return (self.alpha_A * (membrane_potential - self.alpha_V_half)) / (1 - np.exp(-1 * (membrane_potential - self.alpha_V_half) / self.alpha_k))
+        return (
+            (self.alpha_A * (membrane_potential - self.alpha_V_half))
+            / (1 - np.exp(-1 * (membrane_potential - self.alpha_V_half) / self.alpha_k)))
 
     def beta(self, membrane_potential):
-        return (-1 * self.beta_A * (membrane_potential - self.beta_V_half)) / (1 - np.exp((membrane_potential - self.beta_V_half) / self.beta_k))
+        return (
+            (-1 * self.beta_A * (membrane_potential - self.beta_V_half))
+            / (1 - np.exp((membrane_potential - self.beta_V_half) / self.beta_k)))
 
     def resting_point(self, resting_membrane_potential):
         alpha = self.alpha(resting_membrane_potential)
