@@ -1,3 +1,13 @@
+"""
+Author: Morgan Sun
+
+Usage: python main.py --output_dir=D:\Documents\Academics\BME517\bme_lab_1_report\
+
+This file contains code for UMich 2023W BME517 Lab 1.
+Permeability, g_bar, membrane leakage, and membrane capacitance parameters values taken from the lab manual.
+Ion concentration parameters taken from 'Physical Biology of the Cell' (Phillips et al.)
+Ion channel parameters taken from 'A Model of Spike Initiation in Neocortical Pyramidal Neurons' (Mainen et al.)
+"""
 
 import argparse
 
@@ -207,12 +217,33 @@ def main(output_dir):
         output_filepath=output_dir + f"lower.png")
     voltage_threshold_bound_upper = output_dict_upper["V_m"][find_local_maxima(output_dict_upper["V_m"])[0]]
     voltage_threshold_bound_lower = output_dict_lower["V_m"][find_local_maxima(output_dict_lower["V_m"])[0]]
+    voltage_peak = output_dict_upper["V_m"][find_local_maxima(output_dict_upper["V_m"])[1]]
     print("\nThreshold Stim Current (uA/cm2):")
     pprint("UBound", stim_magnitude_bound_upper, decimals=16)
     pprint("LBound", stim_magnitude_bound_lower, decimals=16)
     print("\nThreshold Voltage (mV):")
     pprint("UBound", voltage_threshold_bound_upper, decimals=16)
     pprint("LBound", voltage_threshold_bound_lower, decimals=16)
+    print("\nAction Potential Peak (mV):")
+    pprint("", voltage_peak, decimals=16)
+
+    # Plot stimulus voltage against peak voltage
+    stim_magnitude_sweep_start = np.round((stim_magnitude_bound_lower + stim_magnitude_bound_upper) / 2) - 10
+    stim_magnitude_sweep_stop = stim_magnitude_sweep_start + 20
+    stim_voltages = []
+    peak_voltages = []
+    for stim_magnitude in np.linspace(start=stim_magnitude_sweep_start, stop=stim_magnitude_sweep_stop, num=100):
+        output_dict = neuron.run(stim_magnitude=stim_magnitude, stim_time=0.10, warmup_time=2.00, run_time=60.00)
+        stim_voltages.append(output_dict["V_m"][find_local_maxima(output_dict["V_m"])[0]])
+        peak_voltages.append(np.max(output_dict["V_m"]))
+    plt.rcParams["figure.figsize"] = [6, 6]
+    plt.rcParams["figure.autolayout"] = True
+    fig, axes = plt.subplots(1, 1)
+    axes.set_xlabel(r"$V_{stim}$  $(mV)$")
+    axes.set_ylabel(r"$V_{peak}$  $(mV)$")
+    axes.plot(stim_voltages, peak_voltages)
+    plt.savefig(output_dir + "threshold.png")
+    plt.close()
 
 
 if __name__ == "__main__":
