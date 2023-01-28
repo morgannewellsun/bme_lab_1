@@ -80,7 +80,7 @@ class Channel:
         return (self.alpha(membrane_potential) * (1 - channel_value)) - (self.beta(membrane_potential) * channel_value)
 
 
-class Neuron:
+class Compartment:
 
     def __init__(self):
         self.ion_K = Ion(charge=1, permeability=1.0, concentration_inner=155, concentration_outer=4, g_bar=50)
@@ -170,7 +170,7 @@ class Neuron:
 def main(output_dir):
 
     # Initialize the neuron simulation, and print out Nernst and equilibrium properties
-    neuron = Neuron()
+    neuron = Compartment()
     print("\nNernst Potentials (mV): ")
     pprint("K", neuron.ion_K.nernst_potential)
     pprint("Na", neuron.ion_Na.nernst_potential)
@@ -186,7 +186,7 @@ def main(output_dir):
     # Run and plot single action potential with various stimulus magnitudes
     for stim_magnitude in range(100, 301, 25):
         output_dict = neuron.run(stim_magnitude=stim_magnitude, stim_time=0.10, warmup_time=2.00, run_time=10.00)
-        Neuron.plot(
+        Compartment.plot(
             **output_dict,
             show=False,
             output_filepath=output_dir + f"{stim_magnitude}.png")
@@ -207,11 +207,11 @@ def main(output_dir):
         else:
             stim_magnitude_bound_lower = stim_magnitude
             output_dict_lower = output_dict
-    Neuron.plot(
+    Compartment.plot(
         **output_dict_upper,
         show=False,
         output_filepath=output_dir + f"upper.png")
-    Neuron.plot(
+    Compartment.plot(
         **output_dict_lower,
         show=False,
         output_filepath=output_dir + f"lower.png")
