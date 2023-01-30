@@ -14,6 +14,9 @@ import argparse
 import numpy as np
 from matplotlib import pyplot as plt
 
+plt.rcParams["figure.figsize"] = [6, 6]
+plt.rcParams["figure.autolayout"] = True
+
 
 def pprint(name, value, decimals=4):
     print(f"{name:8} = {value:8.{decimals}f}")
@@ -146,9 +149,8 @@ class Compartment:
 
     @staticmethod
     def plot(t, I_stim, V_m, m, h, n, show=True, output_filepath=None):
-        plt.rcParams["figure.figsize"] = [6, 6]
-        plt.rcParams["figure.autolayout"] = True
         fig, axes = plt.subplots(3, 1, sharex="all")
+        axes[0].set_title(f"voltage and channel values over time")
         axes[0].set_ylabel(r"$I_{stim}$  $(\mu A/cm^2)$")
         axes[0].set_ylim(-10, 310)
         axes[0].plot(t, I_stim, color="tab:blue")
@@ -184,7 +186,7 @@ def main(output_dir):
     pprint("n", neuron.init_n)
 
     # Run and plot single action potential with various stimulus magnitudes
-    for stim_magnitude in range(100, 301, 25):
+    for stim_magnitude in range(100, 351, 25):
         output_dict = neuron.run(stim_magnitude=stim_magnitude, stim_time=0.10, warmup_time=2.00, run_time=10.00)
         Compartment.plot(
             **output_dict,
@@ -242,6 +244,7 @@ def main(output_dir):
     axes.set_xlabel(r"$V_{stim}$  $(mV)$")
     axes.set_ylabel(r"$V_{peak}$  $(mV)$")
     axes.plot(stim_voltages, peak_voltages)
+    plt.title(f"peak vs stimulus voltage")
     plt.savefig(output_dir + "threshold.png")
     plt.close()
 
